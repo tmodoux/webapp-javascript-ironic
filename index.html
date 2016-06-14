@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ironic Webapp</title>
+</head>
+<body>
+
+<p>
+    <strong>Pryv login: </strong><span id="pryv-button"></span>
+</p>
+
+<select id="selector" name="Available streams">
+    <option>Sample Amperometry</option>
+    <option>Sample Voltammetry</option>
+</select>
+
+<div id="graphs">
+    <div id="sampleAmperometry"></div>
+    <div id="sampleVoltammetry"></div>
+</div>
+
+<script src="plotly-latest.min.js"></script>
+<script src="pryv.js"></script>
+<script src="index.js"></script>
+<script src="sampleAmperometry.js"></script>
+<script src="sampleVoltammetry.js"></script>
+</body>
+</html>

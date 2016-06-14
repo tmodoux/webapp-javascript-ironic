@@ -1,0 +1,13 @@
+{
+  "name": "ironic-angular",
+  "version": "1.0.0",
+  "description": "Frontend webapp for Ironic++ project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Thiébaud Modoux",
+  "license": "ISC",
+  "dependencies": {
+  }
+}
