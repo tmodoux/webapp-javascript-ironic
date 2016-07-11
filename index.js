@@ -1,7 +1,7 @@
 var connection;
 var streams = ['amperometry','voltammetry'];
-var container = document.getElementById("graphs");
-var selector = document.getElementById("selector");
+var container = document.getElementById("pryvGraphs");
+var monitor;
 
 // AUTH
 
@@ -47,7 +47,7 @@ pryv.Auth.setup(authSettings);
 // Setup monitoring for remote changes
 function setupMonitor(streamId) {
     var filter = new pryv.Filter({streamsIds: [streamId]});
-    var monitor = connection.monitor(filter);
+    monitor = connection.monitor(filter);
 
     // should be false by default, will be updated in next lib version
     // to use fullCache call connection.ensureStructureFetched before
@@ -72,16 +72,7 @@ function setupMonitor(streamId) {
 // GRAPHS
 
 function loadGraphs() {
-    resetGraphs();
-
     streams.forEach(function(stream) {
-        // Initialize graphs selector
-        var option = document.createElement("option");
-        option.setAttribute("value", stream);
-        var title = document.createTextNode(stream);
-        option.appendChild(title);
-        selector.appendChild(option);
-
         // Initialize graphs
         var graph = document.createElement('div');
         graph.setAttribute("id", stream);
@@ -109,5 +100,10 @@ function updateGraph(stream,events) {
 }
 
 function resetGraphs() {
-
+    if(monitor) {
+        monitor.destroy();
+    }
+    while (container.firstChild) {
+        container.removeChild(container.firstChild);
+    }
 }
