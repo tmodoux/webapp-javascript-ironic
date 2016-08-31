@@ -1,12 +1,12 @@
 var connection;
-var streams = ['amperometry','voltammetry'];
+var stream = 'amperometry';
 var container = document.getElementById("pryvGraphs");
 var monitor;
 
 // AUTH
 
 // Preliminary step: use staging environment (remove for use on production infrastructure)
-pryv.Auth.config.registerURL = { host: 'reg.pryv-switch.ch', 'ssl': true };
+pryv.Auth.config.registerURL = {host: 'reg.pryv-switch.ch', 'ssl': true};
 
 // Authenticate user
 var authSettings = {
@@ -25,11 +25,11 @@ var authSettings = {
         initialization: function () {
             // optional (example use case: display "loading" notice)
         },
-        needSignin: function(popupUrl, pollUrl, pollRateMs) {
+        needSignin: function (popupUrl, pollUrl, pollRateMs) {
             resetGraphs();
         },
         needValidation: null,
-        signedIn: function(connect, langCode) {
+        signedIn: function (connect, langCode) {
             connection = connect;
             loadGraphs();
         },
@@ -45,8 +45,8 @@ pryv.Auth.setup(authSettings);
 // MONITORING
 
 // Setup monitoring for remote changes
-function setupMonitor(streamId) {
-    var filter = new pryv.Filter({streamsIds: [streamId]});
+function setupMonitor() {
+    var filter = new pryv.Filter({streamsIds: [stream]});
     monitor = connection.monitor(filter);
 
     // should be false by default, will be updated in next lib version
@@ -56,12 +56,12 @@ function setupMonitor(streamId) {
 
     // get notified when monitoring starts
     monitor.addEventListener(pryv.MESSAGES.MONITOR.ON_LOAD, function (events) {
-        updateGraph(streamId,monitor.getEvents());
+        updateGraph(monitor.getEvents());
     });
 
     // get notified when data changes
     monitor.addEventListener(pryv.MESSAGES.MONITOR.ON_EVENT_CHANGE, function (changes) {
-        updateGraph(streamId,monitor.getEvents());
+        updateGraph(monitor.getEvents());
     });
 
     // start monitoring
@@ -72,35 +72,40 @@ function setupMonitor(streamId) {
 // GRAPHS
 
 function loadGraphs() {
-    streams.forEach(function(stream) {
-        // Initialize graphs
-        var graph = document.createElement('div');
-        graph.setAttribute("id", stream);
-        container.appendChild(graph);
+    // Initialize graph
+    var graph = document.createElement('div');
+    graph.setAttribute("id", stream);
+    container.appendChild(graph);
 
-        // Initialize monitors
-        setupMonitor(stream);
-    });
+    // Initialize monitor
+    setupMonitor();
 }
 
-function updateGraph(stream,events) {
-    if(stream == "amperometry") {
-        var time = events.map(function (e) {if(e.getData().type=="electric-current/a") return e.getData().time; });
-        var current = events.map(function (e) {if(e.getData().type=="electric-current/a") return e.getData().content; });
-        var trace = {x: time, y: current, mode: "lines", name: "Trace1", type: "scatter"};
-        var layout = {title: "Amperometry"};
-        Plotly.newPlot("amperometry", [trace], layout);
-    } else if(stream == "voltammetry") {
-        var voltage = events.map(function (e) {if(e.getData().type=="electromotive-force/v") return e.getData().content; });
-        var current = events.map(function (e) {if(e.getData().type=="electric-current/a") return e.getData().time; });
-        var trace = {x: voltage, y: current, mode: "lines", name: "Trace1", type: "scatter"};
-        var layout = {title: "Voltammetry"};
-        Plotly.newPlot("voltammetry", [trace], layout);
-    }
+function updateGraph(events) {
+    var time = events.map(function (e) {
+        return e.getData().time;
+    });
+    var current = events.map(function (e) {
+        return e.getData().content;
+    });
+    var trace = {x: time, y: current, mode: "lines", name: "Trace1", type: "scatter"};
+    var layout = {
+        title: "Chrono Amperometry (from Pryv)",
+        xaxis1: {
+            anchor: "y1",
+            domain: [0.0, 1.0],
+            title: "Time (seconds)"
+        },
+        yaxis1: {
+            anchor: "x1",
+            domain: [0.0, 1.0],
+            title: "Current (uA)"
+        }};
+    Plotly.newPlot("amperometry", [trace], layout);
 }
 
 function resetGraphs() {
-    if(monitor) {
+    if (monitor) {
         monitor.destroy();
     }
     while (container.firstChild) {

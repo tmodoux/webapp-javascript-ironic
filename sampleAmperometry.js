@@ -15,7 +15,7 @@ var trace2 = {
 
 var data = [trace1, trace2];
 var layout = {
-    title: "Chrono Amperometry",
+    title: "Chrono Amperometry (sample)",
     xaxis1: {
         anchor: "y1",
         domain: [0.0, 1.0],

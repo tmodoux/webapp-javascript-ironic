@@ -18,7 +18,7 @@ var trace2 = {
 };
 var data = [trace1, trace2];
 var layout = {
-    title: "Cyclic Voltammetry",
+    title: "Cyclic Voltammetry (sample)",
     xaxis1: {
         anchor: "y1",
         domain: [0.0, 1.0],
